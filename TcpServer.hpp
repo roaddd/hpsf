@@ -2,8 +2,11 @@
 #define __TCPSERVER_HPP__
 
 #include "IChannelCallBcak.hpp"
+#include "IAcceptorCallBack.hpp"
 #include "Channel.hpp"
 #include <map>
+#include "Acceptor.hpp"
+#include "TcpConnection.hpp"
 
 #define MAX_LINE 100
 #define MAX_EVENTS 500
@@ -11,18 +14,19 @@
 
 namespace hpsf
 {
-    class TcpServer:IChannelCallBack
+    class TcpServer:IAcceptorCallBack
     {
         public:
             TcpServer();
             ~TcpServer();
             void start();
-            virtual void OnIn(int sockfd);
+            virtual void newConnection(int connfd);
         private:
-            int createAndListen();
+            
             int epollfd_;
             int listenfd_;
-            std::map<int,Channel*> channels_;
+            Acceptor* acceptor_;
+            std::map<int,TcpConnection*> tcpConnections_;
     };
 } // namespace hpsf
 

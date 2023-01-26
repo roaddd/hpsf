@@ -1,5 +1,6 @@
 #include "Channel.hpp"
 #include <sys/epoll.h>
+#include <iostream>
 
 namespace hpsf
 {
@@ -39,6 +40,7 @@ namespace hpsf
 
     void Channel::enableReading()
     {
+
         events_|=EPOLLIN;
         update();
     }
