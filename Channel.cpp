@@ -4,8 +4,8 @@
 
 namespace hpsf
 {
-    Channel::Channel(int epollfd,int sockfd)
-    :epollfd_(epollfd),sockfd_(sockfd)
+    Channel::Channel(EventLoop* loop,int sockfd):
+    loop_(loop),sockfd_(sockfd)
     ,events_(0),revents_(0),callBack_(nullptr)
     { }
 
@@ -15,6 +15,11 @@ namespace hpsf
     int Channel::revents() const
     {
         return revents_;
+    }
+
+    int Channel::getEvents() const
+    {
+        return events_;
     }
 
     void Channel::setCallBack(IChannelCallBack* callback)
@@ -47,10 +52,7 @@ namespace hpsf
     
     void Channel::update()
     {
-        struct epoll_event ev;
-        ev.data.ptr=this;
-        ev.events=events_;
-        epoll_ctl(epollfd_,EPOLL_CTL_ADD,sockfd_,&ev);
+        loop_->update(this); 
     }
 
 } // namespace hpsf

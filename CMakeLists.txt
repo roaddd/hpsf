@@ -7,4 +7,4 @@ set(CMAKE_CXX_COMPLIER "g++")
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-add_executable(hpfs test.cpp TcpServer.cpp Channel.cpp Acceptor.cpp TcpConnection.cpp)
+add_executable(hpfs test.cpp TcpServer.cpp Channel.cpp Acceptor.cpp TcpConnection.cpp Epoll.cpp EventLoop.cpp EchoServer.cpp)

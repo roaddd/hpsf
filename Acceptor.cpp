@@ -7,7 +7,7 @@
 
 namespace hpsf
 {
-    Acceptor::Acceptor(int epollfd):epollfd_(epollfd)
+    Acceptor::Acceptor(EventLoop* loop):loop_(loop)
     ,listenfd_(-1),pAcceptChannel_(nullptr),pCallback_(nullptr)
     { 
         listenfd_=createAndListen();
@@ -73,7 +73,8 @@ namespace hpsf
 
     void Acceptor::start()
     {
-        pAcceptChannel_=new Channel(epollfd_,listenfd_);
+        std::cout<<"Acceptor::start(): "<<std::endl;
+        pAcceptChannel_=new Channel(loop_,listenfd_);
         pAcceptChannel_->setCallBack(this);
         pAcceptChannel_->enableReading();
     }

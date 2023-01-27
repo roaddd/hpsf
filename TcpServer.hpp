@@ -7,26 +7,27 @@
 #include <map>
 #include "Acceptor.hpp"
 #include "TcpConnection.hpp"
-
-#define MAX_LINE 100
-#define MAX_EVENTS 500
-#define MAX_LISTENFD 200
+#include "Epoll.hpp"
+#include "EventLoop.hpp"
+#include "IMuduoUser.hpp"
 
 namespace hpsf
 {
+    //class IMuduoUser;
     class TcpServer:IAcceptorCallBack
     {
         public:
-            TcpServer();
+            TcpServer(EventLoop* loop);
             ~TcpServer();
             void start();
             virtual void newConnection(int connfd);
+            void setCallBack(IMuduoUser* pUser);
         private:
-            
-            int epollfd_;
+            EventLoop* loop_;
             int listenfd_;
             Acceptor* acceptor_;
             std::map<int,TcpConnection*> tcpConnections_;
+            IMuduoUser* pUser_;
     };
 } // namespace hpsf
 

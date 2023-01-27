@@ -10,7 +10,7 @@ namespace hpsf
     class Acceptor:IChannelCallBack
     {
         public:
-            Acceptor(int epollfd);
+            Acceptor(EventLoop* loop);
             ~Acceptor();
 
             virtual void OnIn(int socket);
@@ -19,7 +19,7 @@ namespace hpsf
 
         private:
             int createAndListen();
-            int epollfd_;
+            EventLoop* loop_;
             int listenfd_;
             Channel* pAcceptChannel_;
             IAcceptorCallBack* pCallback_;

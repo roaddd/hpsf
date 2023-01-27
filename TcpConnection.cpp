@@ -8,10 +8,10 @@
 
 namespace hpsf
 {
-    TcpConnection::TcpConnection(int epollfd,int sockfd):
-        epollfd_(epollfd),sockfd_(sockfd)
+    TcpConnection::TcpConnection(EventLoop* loop,int sockfd):
+        loop_(loop),sockfd_(sockfd),pUser_(nullptr)
         { 
-            pChannel_=new Channel(epollfd_,sockfd_);
+            pChannel_=new Channel(loop_,sockfd_);
             pChannel_->setCallBack(this);
             pChannel_->enableReading();
         }
@@ -19,6 +19,17 @@ namespace hpsf
     TcpConnection::~TcpConnection()
     {
 
+    }
+
+    void TcpConnection::setUser(IMuduoUser* pUser)
+    {
+        pUser_=pUser;
+    }
+
+    void TcpConnection::connectEstablished()
+    {
+        if(pUser_)
+            pUser_->onConnection(this);
     }
 
     void TcpConnection::OnIn(int sockfd)
@@ -44,11 +55,19 @@ namespace hpsf
             }
             else
             {
-                if(write(sockfd,message,readlength)<0)
-                {
-                    std::cout<<"can't write all message to connfd: "<<sockfd<<std::endl;
-                }
+                std::string buf(message);
+                pUser_->onMessage(this,buf);
             }
+        }
+    }
+
+    void TcpConnection::send(std::string& s)
+    {
+        int n=::write(sockfd_,s.c_str(),s.size());
+        if(n!=static_cast<int>(s.size()))
+        {
+            std::cout<<"TcpConnection::send error !"<<std::endl;
+            exit(1);
         }
     }
 } // namespace hpsf
