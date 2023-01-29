@@ -14,7 +14,8 @@ namespace hpsf
             ~EchoServer();
 
             virtual void onConnection(TcpConnection* connection);
-            virtual void onMessage(TcpConnection* connection,std::string& s);
+            virtual void onMessage(TcpConnection* connection,Buffer* buffer);
+            virtual void onWriteComplate(TcpConnection* connection);
 
             void start();
         private:

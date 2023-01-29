@@ -5,17 +5,21 @@
 #include "Channel.hpp"
 #include "IMuduoUser.hpp"
 #include <string>
+#include "Buffer.hpp"
+#include "IRun.hpp"
 
 namespace hpsf
 {
     class IMuduoUser;
-    class TcpConnection:public IChannelCallBack
+    class TcpConnection:public IChannelCallBack,public IRun
     {
         public:
             TcpConnection(EventLoop* loop,int sockfd);
             ~TcpConnection();
 
-            virtual void OnIn(int sockfd);
+            virtual void handleRead();
+            virtual void handleWrite();
+            virtual void run();
 
             void setUser(IMuduoUser* pUser);
             void connectEstablished();
@@ -25,6 +29,8 @@ namespace hpsf
             int sockfd_;
             Channel* pChannel_; 
             IMuduoUser* pUser_;
+            Buffer inBuf_;
+            Buffer outBuf_;
     };
 } // namespace hpsf
 

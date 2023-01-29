@@ -52,7 +52,7 @@ namespace hpsf
         return listenfd;
     }
 
-    void Acceptor::OnIn(int socket)
+    void Acceptor::handleRead()
     {
         int connfd;
         struct sockaddr_in cliaddr;
@@ -69,6 +69,11 @@ namespace hpsf
             << " errno:" << errno << std::endl;
         }
         pCallback_->newConnection(connfd);
+    }
+
+    void Acceptor::handleWrite()
+    {
+        
     }
 
     void Acceptor::start()

@@ -24,9 +24,15 @@ namespace hpsf
         std::cout<<"EchoServer- "<<std::endl;
     }
 
-    void EchoServer::onMessage(TcpConnection* connection,std::string& s)
+    void EchoServer::onMessage(TcpConnection* connection,Buffer* buffer)
     {   
-        std::cout<<"onMessage"<<std::endl;
-        connection->send(s);
+        std::string msg(buffer->retrieveAllAsString());
+        connection->send(msg);
+        std::cout<<"echo "<<msg.size() <<" bytes "<<std::endl;
+    }
+
+    void EchoServer::onWriteComplate(TcpConnection* connection)
+    {
+        std::cout<<"write complate to"<<std::endl;
     }
 }

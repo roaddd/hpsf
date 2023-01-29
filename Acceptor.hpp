@@ -13,7 +13,8 @@ namespace hpsf
             Acceptor(EventLoop* loop);
             ~Acceptor();
 
-            virtual void OnIn(int socket);
+            virtual void handleRead();
+            virtual void handleWrite();
             void setCallBack(IAcceptorCallBack* pCallBack);
             void start();
 

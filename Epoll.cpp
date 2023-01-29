@@ -4,6 +4,12 @@
 
 namespace hpsf
 {
+
+    enum State
+    {
+        kNew,kAdded
+    };
+
     Epoll::Epoll()
     {
         epollfd_=epoll_create1(EPOLL_CLOEXEC);
@@ -37,11 +43,19 @@ namespace hpsf
 
     void Epoll::update(Channel* channel)
     {
+        int index=channel->getIndex();
         struct epoll_event ev;
         ev.data.ptr=channel;
         ev.events=channel->getEvents();
         int fd=channel->getSockfd();
-        std::cout<<"Epoll::update(): "<<fd<<std::endl;
-        ::epoll_ctl(epollfd_,EPOLL_CTL_ADD,fd,&ev);
+        if(index==kNew)
+        {
+            channel->setIndex(kAdded);
+            ::epoll_ctl(epollfd_,EPOLL_CTL_ADD,fd,&ev);
+        }
+        else
+        {
+            ::epoll_ctl(epollfd_,EPOLL_CTL_MOD,fd,&ev);
+        }
     }
 } // namespace hpsf

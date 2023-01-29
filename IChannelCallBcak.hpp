@@ -6,9 +6,8 @@ namespace hpsf
     class IChannelCallBack
     {
     public:
-        virtual void OnIn(int sockfd)
-        { }
-
+        virtual void handleRead()=0;
+        virtual void handleWrite()=0;
     };  
 } // namespace hpsf
 
