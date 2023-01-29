@@ -53,7 +53,8 @@ namespace hpsf
         }
         else
         {
-            std::string buf(message);
+            std::string buf(message,readlength);
+            std::cout<<"handleRead(): "<<buf<<std::endl;
             inBuf_.append(buf);
             pUser_->onMessage(this,&inBuf_);
         }

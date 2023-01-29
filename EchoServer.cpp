@@ -27,6 +27,7 @@ namespace hpsf
     void EchoServer::onMessage(TcpConnection* connection,Buffer* buffer)
     {   
         std::string msg(buffer->retrieveAllAsString());
+        std::cout<<"send: "<<msg<<"  "<<msg[msg.size()-3]-0<<" "<<msg.back()-0<<std::endl;
         connection->send(msg);
         std::cout<<"echo "<<msg.size() <<" bytes "<<std::endl;
     }
