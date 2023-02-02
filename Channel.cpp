@@ -1,6 +1,7 @@
 #include "Channel.hpp"
 #include <sys/epoll.h>
 #include <iostream>
+#include "EventLoop.hpp"
 
 namespace hpsf
 {

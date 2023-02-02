@@ -2,7 +2,7 @@
 #define __CHANNEL_HPP__
 
 #include "IChannelCallBcak.hpp"
-#include "EventLoop.hpp"
+
 
 namespace hpsf
 {

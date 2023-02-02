@@ -5,6 +5,7 @@
 #include <string.h>
 #include <errno.h>
 #include <iostream>
+#include "EventLoop.hpp"
 
 namespace hpsf
 {
@@ -73,13 +74,13 @@ namespace hpsf
                 if(outBuf_.readableBytes()==0)
                 {
                     pChannel_->disableWriting();
-                    loop_->queueLoop(this); //invoke onWriteComplate
+                    loop_->queueLoop(this,NULL); //invoke onWriteComplate
                 }
             }
         }
     }
 
-    void TcpConnection::run()
+    void TcpConnection::run(void* param)
     {
         pUser_->onWriteComplate(this);
     }
@@ -97,7 +98,7 @@ namespace hpsf
             }
             if(n==static_cast<int>(s.size()))
             {
-                loop_->queueLoop(this);
+                loop_->queueLoop(this,NULL);
             }
         }
         if(n<static_cast<int>(s.size()))

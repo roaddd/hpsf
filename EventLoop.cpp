@@ -13,6 +13,8 @@ namespace hpsf
         wakeupChannel_=new Channel(this,eventfd_);
         wakeupChannel_->setCallBack(this);
         wakeupChannel_->enableReading();
+        pTimerQueue_=new TimerQueue(this);
+        std::cout<<"EventLoop created"<<std::endl;
     }
 
     EventLoop::~EventLoop()
@@ -68,9 +70,9 @@ namespace hpsf
         
     }
 
-    void EventLoop::queueLoop(IRun* pRun)
+    void EventLoop::queueLoop(IRun* pRun,void* param)
     {
-        pendingFunctors_.push_back(pRun);
+        pendingFunctors_.push_back(Runner(pRun,param));
         wakeUp();
     }
 
@@ -87,12 +89,32 @@ namespace hpsf
 
     void EventLoop::doPendingFunctors()
     {
-        std::vector<IRun*> nextRuns;
+        std::vector<Runner> nextRuns;
         nextRuns.swap(pendingFunctors_);
         for(auto it=nextRuns.begin();it!=nextRuns.end();it++)
         {
-            (*it)->run();
+            it->doRun();
         }
+    }
+
+    int EventLoop::runAt(Timestamp when,IRun* pRun)
+    {
+        return pTimerQueue_->addTimer(pRun,when,0.0);
+    }
+
+    int EventLoop::runAfter(double delay,IRun* pRun)
+    {
+        return pTimerQueue_->addTimer(pRun,Timestamp::nowAfter(delay),0.0);
+    }
+
+    int EventLoop::runEvery(double interval,IRun* pRun)
+    {
+        return pTimerQueue_->addTimer(pRun,Timestamp::nowAfter(interval),interval);
+    }
+
+    void EventLoop::cancelTimer(int timerId)
+    {
+        pTimerQueue_->cancel(timerId); 
     }
 
 } // namespace hpsf

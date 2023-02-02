@@ -19,7 +19,7 @@ namespace hpsf
 
             virtual void handleRead();
             virtual void handleWrite();
-            virtual void run();
+            virtual void run(void* param);
 
             void setUser(IMuduoUser* pUser);
             void connectEstablished();
