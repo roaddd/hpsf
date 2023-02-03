@@ -13,7 +13,6 @@
 
 namespace hpsf
 {
-    //class IMuduoUser;
     class TcpServer:IAcceptorCallBack
     {
         public:

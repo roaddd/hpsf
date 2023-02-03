@@ -2,10 +2,10 @@
 #include <iostream>
 #include "EchoServer.hpp"
 
-class Test1:public hpsf::IRun
+class Test1:public hpsf::IRun0
 {
     public:
-        virtual void run(void* param)
+        virtual void run()
         {
             std::cout<<data<<std::endl;
         }
@@ -14,16 +14,24 @@ class Test1:public hpsf::IRun
 
 int main()
 {
-    // hpsf::EventLoop* loop=new hpsf::EventLoop();
-    // hpsf::EchoServer server(loop);
-    // server.start();
-    // loop->loop();
-
-    //TimerQueue
+    //EchoServer
     hpsf::EventLoop* loop=new hpsf::EventLoop();
+    hpsf::EchoServer server(loop,5);
+    server.start();
     Test1 test1;
     test1.data="每2s定时器";
     loop->runEvery(2.0,&test1);
     loop->loop();
+
+    //TimerQueue
+    // hpsf::EventLoop* loop=new hpsf::EventLoop();
+    // Test1 test1;
+    // test1.data="每2s定时器";
+    // loop->runEvery(2.0,&test1);
+    // loop->loop();
+
+    
+
+
     return 0;
 }

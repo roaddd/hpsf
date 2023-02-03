@@ -1,12 +1,18 @@
 #include "EchoServer.hpp"
+#include "Task.hpp"
+#include "CurrentThread.hpp"
+
 #include <iostream>
 
 namespace hpsf
 {
-    EchoServer::EchoServer(EventLoop* loop):
-    loop_(loop),tcpServer(loop)
+    EchoServer::EchoServer(EventLoop* loop,int numThreads):
+    loop_(loop),
+    tcpServer(loop),
+    numThreads_(numThreads)
     {
         tcpServer.setCallBack(this);
+        threadPool_.start(numThreads_);
     }
 
     EchoServer::~EchoServer()
@@ -27,13 +33,27 @@ namespace hpsf
     void EchoServer::onMessage(TcpConnection* connection,Buffer* buffer)
     {   
         std::string msg(buffer->retrieveAllAsString());
-        std::cout<<"send: "<<msg<<"  "<<msg[msg.size()-3]-0<<" "<<msg.back()-0<<std::endl;
-        connection->send(msg);
+        std::cout<<"send: "<<msg<<std::endl;
+        Task task(this,msg,connection);
+        threadPool_.addTask(task);
         std::cout<<"echo "<<msg.size() <<" bytes "<<std::endl;
     }
 
     void EchoServer::onWriteComplate(TcpConnection* connection)
     {
         std::cout<<"write complate to"<<std::endl;
+    }
+
+    //run in different thread
+    void EchoServer::run(const std::string& str,void* param)
+    {
+        std::cout<<"fib(30)= "<<fib(30)<<" tid= "<<CurrentThread::tid()<<std::endl;
+        TcpConnection* connection=static_cast<TcpConnection*>(param);
+        connection->send(str);
+    }
+
+    int EchoServer::fib(int x)
+    {
+        return (x==1 || x==2)?1:(fib(x-1)+fib(x-2));
     }
 }

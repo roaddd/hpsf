@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <iostream>
 #include "EventLoop.hpp"
+#include "Task.hpp"
 
 namespace hpsf
 {
@@ -38,7 +39,7 @@ namespace hpsf
         char message[MAX_LINE];
         ssize_t readlength;
         bzero(message,MAX_LINE);
-        int sockfd=pChannel_->getSockfd();
+        int sockfd=pChannel_->getfd();
         if((readlength=read(sockfd,message,MAX_LINE))<0)
         {
             if(errno==ECONNRESET)
@@ -63,7 +64,7 @@ namespace hpsf
 
     void TcpConnection::handleWrite()
     {
-        int sockfd=pChannel_->getSockfd();
+        int sockfd=pChannel_->getfd();
         if(pChannel_->isWriting())
         {
             int n=::write(sockfd,outBuf_.peek(),outBuf_.readableBytes());
@@ -74,18 +75,19 @@ namespace hpsf
                 if(outBuf_.readableBytes()==0)
                 {
                     pChannel_->disableWriting();
-                    loop_->queueLoop(this,NULL); //invoke onWriteComplate
+                    Task task(this);
+                    loop_->queueInLoop(task); //invoke onWriteComplate
                 }
             }
         }
     }
 
-    void TcpConnection::run(void* param)
+    void TcpConnection::run()
     {
         pUser_->onWriteComplate(this);
     }
 
-    void TcpConnection::send(std::string& s)
+    void TcpConnection::send(const std::string& s)
     {
         int n=0;
         if(outBuf_.readableBytes()==0)
@@ -98,7 +100,8 @@ namespace hpsf
             }
             if(n==static_cast<int>(s.size()))
             {
-                loop_->queueLoop(this,NULL);
+                Task task(this);
+                loop_->queueInLoop(task);
             }
         }
         if(n<static_cast<int>(s.size()))

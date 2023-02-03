@@ -7,7 +7,7 @@
 
 namespace hpsf
 {
-    class Acceptor:IChannelCallBack
+    class Acceptor:public IChannelCallBack
     {
         public:
             Acceptor(EventLoop* loop);

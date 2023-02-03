@@ -47,7 +47,7 @@ namespace hpsf
         struct epoll_event ev;
         ev.data.ptr=channel;
         ev.events=channel->getEvents();
-        int fd=channel->getSockfd();
+        int fd=channel->getfd();
         if(index==kNew)
         {
             channel->setIndex(kAdded);

@@ -17,7 +17,7 @@ namespace hpsf
         void handleEvent();
         void setRevents(int revent);
         void setIndex(int index);
-        int getSockfd();
+        int getfd();
         int getIndex() const;
         int revents() const;
         int getEvents() const;

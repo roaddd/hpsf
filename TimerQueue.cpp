@@ -8,6 +8,7 @@
 #include <strings.h>
 #include <algorithm>
 #include <iterator>
+#include "Task.hpp"
 
 
 namespace hpsf
@@ -37,10 +38,11 @@ namespace hpsf
     TimerQueue::TimerQueue(EventLoop* loop)
         :loop_(loop),timerfd_(createTimerfd()),
         timerfdChannel_(loop,timerfd_),
-        timers_(),pAddTimerWrapper_(this),pCancelTimerWrapper_(this)
+        timers_()
     {
         timerfdChannel_.setCallBack(this);
         timerfdChannel_.enableReading();
+        std::cout<<"TimerQueue created"<<std::endl;
     }
 
     TimerQueue::~TimerQueue()
@@ -48,11 +50,23 @@ namespace hpsf
         ::close(timerfd_);
     }
 
-    int TimerQueue::addTimer(IRun* pRun,Timestamp when,double interval)
+    int TimerQueue::addTimer(IRun0* pRun,Timestamp when,double interval)
     {
         Timer* pTimer=new Timer(when,pRun,interval);
-        loop_->queueLoop(&pAddTimerWrapper_,pTimer);
+        Task task(this,"addTimer",pTimer);
+        loop_->runInLoop(task);
         return pTimer->getId();
+    }
+
+    void TimerQueue::run(const std::string& str,void* param)
+    {
+        if(str=="addTimer")
+        {
+            std::cout<<"addTimer"<<std::endl;
+            doAddTimer(param);
+        }
+        else
+            doCancelTimer(param);
     }
 
     void TimerQueue::doAddTimer(void* parm)

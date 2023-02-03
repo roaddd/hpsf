@@ -5,11 +5,13 @@
 #include "IRun.hpp"
 #include <vector>
 #include "TimerQueue.hpp"
+#include "Mutex.hpp"
 
 namespace hpsf
 {
     class Channel;
     class Epoll;
+    class Task;
 
     class EventLoop:IChannelCallBack
     {
@@ -17,42 +19,34 @@ namespace hpsf
             EventLoop();
             ~EventLoop();
 
-            class Runner
-            {
-                public:
-                    Runner(IRun* r,void* p):pRun_(r),param_(p)
-                    { }
-                    void doRun()
-                    {
-                        pRun_->run(param_);
-                    }
-                private:
-                    IRun* pRun_;
-                    void* param_;
-            };
-
             void loop();
             void update(Channel* Channel);
 
             virtual void handleRead();
             virtual void handleWrite();
 
-            void queueLoop(IRun* pRun,void* arg);
+            void queueInLoop(Task& task);
+            void runInLoop(Task& task);
 
-            int runAt(Timestamp when,IRun* pRun);
-            int runAfter(double delay,IRun* pRun);
-            int runEvery(double interval,IRun* pRun);
+            int runAt(Timestamp when,IRun0* pRun);
+            int runAfter(double delay,IRun0* pRun);
+            int runEvery(double interval,IRun0* pRun);
             void cancelTimer(int timerfd);
+
+            bool isInLoopThread();
 
         private:
             void wakeUp();
             int createEventfd();
             void doPendingFunctors();
             bool quit_;
+            bool callingPendingFunctors_;
             Epoll* poller_;
             int eventfd_;
+            const pid_t threadId_;
             Channel* wakeupChannel_;
-            std::vector<Runner> pendingFunctors_;
+            MutexLock mutex_;
+            std::vector<Task> pendingFunctors_;
             TimerQueue* pTimerQueue_;
     };
 } // namespace hpsf

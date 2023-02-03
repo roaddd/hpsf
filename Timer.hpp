@@ -10,7 +10,7 @@ namespace hpsf
     class Timer
     {
         public:
-            Timer(Timestamp stamp,IRun* pRun,double interval)
+            Timer(Timestamp stamp,IRun0* pRun,double interval)
                 :stamp_(stamp),id_(stamp),pRun_(pRun),interval_(interval)
             {
                 
@@ -18,7 +18,7 @@ namespace hpsf
 
             void run()
             {
-                pRun_->run(NULL);
+                pRun_->run();
             }
 
             bool isReapt()
@@ -43,7 +43,7 @@ namespace hpsf
         private:
             Timestamp stamp_;
             Timestamp id_;
-            IRun* pRun_;
+            IRun0* pRun_;
             double interval_;  
                     
     };

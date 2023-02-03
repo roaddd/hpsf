@@ -46,7 +46,7 @@ namespace hpsf
         index_=index;
     }
 
-    int Channel::getSockfd()
+    int Channel::getfd()
     {
         return sockfd_;
     }
