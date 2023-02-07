@@ -12,24 +12,29 @@ namespace hpsf
     EventLoop::EventLoop()
     :quit_(false),
     threadId_(CurrentThread::tid()),
-    callingPendingFunctors_(false)
+    callingPendingFunctors_(false),
+    poller_(new Epoll()),
+    wakeupChannel_(new Channel(this,eventfd_)),
+    pTimerQueue_(new TimerQueue(this))
     {
-        poller_=new Epoll();
         eventfd_=createEventfd();
-        wakeupChannel_=new Channel(this,eventfd_);
         wakeupChannel_->setCallBack(this);
         wakeupChannel_->enableReading();
-        pTimerQueue_=new TimerQueue(this);
-        std::cout<<"EventLoop created"<<std::endl;
+        std::cout<<"EventLoop created "<<this<<" in thread "<<threadId_<<std::endl;
     }
 
     EventLoop::~EventLoop()
     {
+        std::cout<<"EventLoop "<<this<<" of thread "<<threadId_
+                <<" destructs in thread "<<CurrentThread::tid()<<std::endl;
+        //TODO:wakeupChannel
 
+        ::close(eventfd_);
     }
 
     void EventLoop::loop()
     {
+        std::cout << "EventLoop " << this << " start looping"<<"\n";
         while(!quit_)
         {
             std::vector<Channel*> activeChannels;
@@ -42,7 +47,7 @@ namespace hpsf
 
             doPendingFunctors();
         }
-        
+        std::cout << "EventLoop " << this << " stop looping"<<"\n";
     }
 
     void EventLoop::update(Channel* channel)
@@ -127,22 +132,22 @@ namespace hpsf
         callingPendingFunctors_=false;
     }
 
-    int EventLoop::runAt(Timestamp when,IRun0* pRun)
+    int64_t EventLoop::runAt(Timestamp when,IRun0* pRun)
     {
         return pTimerQueue_->addTimer(pRun,when,0.0);
     }
 
-    int EventLoop::runAfter(double delay,IRun0* pRun)
+    int64_t EventLoop::runAfter(double delay,IRun0* pRun)
     {
         return pTimerQueue_->addTimer(pRun,Timestamp::nowAfter(delay),0.0);
     }
 
-    int EventLoop::runEvery(double interval,IRun0* pRun)
+    int64_t EventLoop::runEvery(double interval,IRun0* pRun)
     {
         return pTimerQueue_->addTimer(pRun,Timestamp::nowAfter(interval),interval);
     }
 
-    void EventLoop::cancelTimer(int timerId)
+    void EventLoop::cancelTimer(int64_t timerId)
     {
         pTimerQueue_->cancel(timerId); 
     }

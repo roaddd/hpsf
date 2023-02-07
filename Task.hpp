@@ -13,6 +13,7 @@ namespace hpsf
             Task(IRun0* func);
             Task(IRun1* func,const std::string& str,void* param);
             void doTask();
+            bool valid(){return func0_ || func1_};
         private:
             IRun0* func0_;
             IRun1* func1_;

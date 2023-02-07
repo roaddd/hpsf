@@ -3,9 +3,12 @@
 
 #include "Epoll.hpp"
 #include "IRun.hpp"
-#include <vector>
 #include "TimerQueue.hpp"
 #include "Mutex.hpp"
+#include "TimerId.hpp"
+
+#include <vector>
+#include <memory>
 
 namespace hpsf
 {
@@ -28,10 +31,10 @@ namespace hpsf
             void queueInLoop(Task& task);
             void runInLoop(Task& task);
 
-            int runAt(Timestamp when,IRun0* pRun);
-            int runAfter(double delay,IRun0* pRun);
-            int runEvery(double interval,IRun0* pRun);
-            void cancelTimer(int timerfd);
+            int64_t runAt(Timestamp when,IRun0* pRun);
+            int64_t runAfter(double delay,IRun0* pRun);
+            int64_t runEvery(double interval,IRun0* pRun);
+            void cancelTimer(int64_t timerfd);
 
             bool isInLoopThread();
 
@@ -41,13 +44,13 @@ namespace hpsf
             void doPendingFunctors();
             bool quit_;
             bool callingPendingFunctors_;
-            Epoll* poller_;
+            std::unique_ptr<Epoll> poller_;
             int eventfd_;
             const pid_t threadId_;
-            Channel* wakeupChannel_;
+            std::unique_ptr<Channel> wakeupChannel_;
             MutexLock mutex_;
             std::vector<Task> pendingFunctors_;
-            TimerQueue* pTimerQueue_;
+            std::unique_ptr<TimerQueue> pTimerQueue_;
     };
 } // namespace hpsf
 
