@@ -5,6 +5,8 @@
 #include "IAcceptorCallBack.hpp"
 #include "IChannelCallBcak.hpp"
 
+#include <memory>
+
 namespace hpsf
 {
     class Acceptor:public IChannelCallBack
@@ -22,7 +24,7 @@ namespace hpsf
             int createAndListen();
             EventLoop* loop_;
             int listenfd_;
-            Channel* pAcceptChannel_;
+            std::unique_ptr<Channel> pAcceptChannel_;
             IAcceptorCallBack* pCallback_;
     };
 } // namespace hpsf
