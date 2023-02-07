@@ -100,6 +100,7 @@ namespace hpsf
                 std::cout<<"TcpConnection::send error"<<std::endl;
                 exit(1);
             }
+            std::cout<<"n: "<<n<<" s.size(): "<<static_cast<int>(s.size())<<std::endl;
             if(n==static_cast<int>(s.size()))
             {
                 Task task(this);

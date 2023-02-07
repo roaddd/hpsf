@@ -3,6 +3,12 @@
 
 namespace hpsf
 {
+    Task::Task()
+    :func0_(nullptr),
+    func1_(nullptr)
+    {
+        
+    }
     Task::Task(IRun0* func)
     :func0_(func),func1_(nullptr),param_(nullptr)
     { }
