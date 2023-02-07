@@ -3,7 +3,10 @@
 
 #include "Timestamp.hpp"
 #include "IRun.hpp"
+#include "Atomic.hpp"
+
 #include <cstddef> 
+#include <stdint.h>
 
 namespace hpsf
 {
@@ -11,9 +14,9 @@ namespace hpsf
     {
         public:
             Timer(Timestamp stamp,IRun0* pRun,double interval)
-                :stamp_(stamp),id_(stamp),pRun_(pRun),interval_(interval)
+                :stamp_(stamp),pRun_(pRun),interval_(interval),
+                sequence_(s_numCreated_.incrementAndGet())
             {
-                
             }
 
             void run()
@@ -33,7 +36,7 @@ namespace hpsf
 
             int getId()
             {
-                return id_.getVal();
+                return sequence_;
             }
 
             Timestamp getStamp()
@@ -42,11 +45,14 @@ namespace hpsf
             }
         private:
             Timestamp stamp_;
-            Timestamp id_;
+            int64_t sequence_;
             IRun0* pRun_;
             double interval_;  
                     
+            static AtomicInt64 s_numCreated_;
     };
+
+    AtomicInt64 Timer::s_numCreated_;
 } // namespace hpsf
 
 

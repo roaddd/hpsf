@@ -11,16 +11,18 @@
 namespace hpsf
 {
     TcpConnection::TcpConnection(EventLoop* loop,int sockfd):
-        loop_(loop),sockfd_(sockfd),pUser_(nullptr)
+        loop_(loop),
+        sockfd_(sockfd),
+        pUser_(nullptr),
+        pChannel_(new Channel(loop_,sockfd_))
         { 
-            pChannel_=new Channel(loop_,sockfd_);
             pChannel_->setCallBack(this);
             pChannel_->enableReading();
         }
 
     TcpConnection::~TcpConnection()
     {
-
+        ::close(sockfd_);
     }
 
     void TcpConnection::setUser(IMuduoUser* pUser)

@@ -12,18 +12,20 @@
 namespace hpsf
 {
     TcpServer::TcpServer(EventLoop* loop):
-    loop_(loop),acceptor_(nullptr)  
+    loop_(loop),acceptor_(new Acceptor(loop_))  
     { 
     }
 
     TcpServer::~TcpServer()
-    { }
+    {
+        ::close(listenfd_);
+    }
 
     void TcpServer::start()
     {
         std::cout<<"TcpServer::start(): "<<std::endl;
-        acceptor_=new Acceptor(loop_);
         acceptor_->setCallBack(this);
+        //TODO 
         acceptor_->start();
     }
 
@@ -34,7 +36,7 @@ namespace hpsf
 
     void TcpServer::newConnection(int connfd)
     {
-        TcpConnection* connection=new TcpConnection(loop_,connfd);
+        TcpConnectionPtr connection=std::make_shared<TcpConnection>(loop_,connfd);
         tcpConnections_[connfd]=connection;
         connection->setUser(pUser_);
         connection->connectEstablished();

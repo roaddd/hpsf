@@ -8,6 +8,7 @@
 #include "IRun.hpp"
 
 #include <string>
+#include <memory>
 
 namespace hpsf
 {
@@ -28,11 +29,13 @@ namespace hpsf
         private:
             EventLoop* loop_;
             int sockfd_;
-            Channel* pChannel_; 
+            std::unique_ptr<Channel> pChannel_; 
             IMuduoUser* pUser_;
             Buffer inBuf_;
             Buffer outBuf_;
     };
+
+    typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 } // namespace hpsf
 
 

@@ -24,8 +24,8 @@ namespace hpsf
         private:
             EventLoop* loop_;
             int listenfd_;
-            Acceptor* acceptor_;
-            std::map<int,TcpConnection*> tcpConnections_;
+            std::unique_ptr<Acceptor> acceptor_;
+            std::map<int,TcpConnectionPtr> tcpConnections_;
             IMuduoUser* pUser_;
     };
 } // namespace hpsf

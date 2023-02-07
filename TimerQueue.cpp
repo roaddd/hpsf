@@ -79,9 +79,11 @@ namespace hpsf
         }
     }
 
-    void TimerQueue::cancel(int timerid)
+    void TimerQueue::cancel(int64_t timerId)
     {
-
+        Timer* timer=timerIds_[timerId];
+        Task task(this,"cancel Timer",timer);
+        loop_->runInLoop(task);
     }
 
     void TimerQueue::doCancelTimer(void* parm)
@@ -91,10 +93,17 @@ namespace hpsf
         {
             if(it->second==pTimer)
             {
+                if(it==timers_.begin() && timers_.size()>1)
+                {
+                    Timestamp nextExpired(std::next(it)->first);
+                    resetTimerfd(timerfd_,nextExpired);
+                }
                 timers_.erase(it);
                 break;
             }
         }
+        timerIds_.erase(timerIds_.find(pTimer->getId()));
+        delete pTimer;
     }
 
     bool TimerQueue::insert(Timer* pTimer)
@@ -110,7 +119,9 @@ namespace hpsf
         if(!result.second)
         {
             std::cout<<"insert error"<<std::endl;
+            exit(1);
         }
+        timerIds_[pTimer->getId()]=pTimer;;
         return earliestChanged;
     }
 
@@ -125,11 +136,6 @@ namespace hpsf
         {
             std::cout<<"timerfd_settime error"<<std::endl;
         }
-    }
-
-    void cancel(int timerId)
-    {
-        //TODO
     }
 
     void TimerQueue::handleRead()

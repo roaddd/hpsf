@@ -15,9 +15,11 @@ namespace hpsf
             void start();
             void run();
             pid_t gettid();
+            int join();
         private:
             IRun0* run_;
             pid_t tid_;
+            pthread_t pthreadId_;
     };
 } // namespace hpsf
 

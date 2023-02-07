@@ -8,14 +8,22 @@ namespace hpsf
     ThreadPool::ThreadPool()
     { }
 
+    ThreadPool::~ThreadPool()
+    {
+        tasks_.stop();
+        for(int i=0;i<threads_.size();i++)
+        {
+            threads_[i]->join();
+        }
+    }
+
     void ThreadPool::start(int numThreads)
     {
         threads_.reserve(numThreads);
         for(int i=0;i<numThreads;i++)
         {
-            Thread* p=new Thread(this);
-            threads_.push_back(p);
-            p->start();
+            threads_.push_back(std::unique_ptr<Thread>(new Thread(this)));
+            threads_[i]->start();
         }
     }
 
@@ -31,11 +39,10 @@ namespace hpsf
 
     void ThreadPool::runInThread()
     {
-        std::cout<<"runInThread()"<<std::endl;
         while(true)
         {
             Task task=tasks_.take();
-            task.doTask();
+            if(task.valid())task.doTask();
         }
     }
 } // namespace hpsf

@@ -1,11 +1,13 @@
 #ifndef __TIMERQUEUE_HPP__
 #define __TIMERQUEUE_HPP__
 
-#include <set>
 #include "Timestamp.hpp"
-#include <vector>
 #include "IRun.hpp"
 #include "Channel.hpp"
+
+#include <vector>
+#include <set>
+#include <unordered_map>
 
 namespace hpsf
 {
@@ -17,7 +19,7 @@ namespace hpsf
             TimerQueue(EventLoop* loop);
             ~TimerQueue();
             int addTimer(IRun0* pRun,Timestamp when,double interval);
-            void cancel(int timerid);
+            void cancel(int64_t timerid);
             virtual void handleRead();
             virtual void handleWrite();
 
@@ -26,7 +28,9 @@ namespace hpsf
 
         private:
             typedef std::pair<Timestamp,Timer*> Entry;
+            typedef std::pair<int64_t,Timer*> Id;
             typedef std::set<Entry> TimerList;
+            typedef std::unordered_map<int64_t,Timer*> TimerId;
 
             void doAddTimer(void* parm);
             void doCancelTimer(void* parm);
@@ -40,6 +44,7 @@ namespace hpsf
             EventLoop* loop_;
             Channel timerfdChannel_;
             TimerList timers_;
+            TimerId timerIds_;
     };
 } // namespace hpsf
 
