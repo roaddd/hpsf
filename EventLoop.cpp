@@ -14,10 +14,10 @@ namespace hpsf
     threadId_(CurrentThread::tid()),
     callingPendingFunctors_(false),
     poller_(new Epoll()),
+    eventfd_(createEventfd()),
     wakeupChannel_(new Channel(this,eventfd_)),
     pTimerQueue_(new TimerQueue(this))
     {
-        eventfd_=createEventfd();
         wakeupChannel_->setCallBack(this);
         wakeupChannel_->enableReading();
         std::cout<<"EventLoop created "<<this<<" in thread "<<threadId_<<std::endl;
@@ -39,7 +39,6 @@ namespace hpsf
         {
             std::vector<Channel*> activeChannels;
             poller_->poll(&activeChannels);
-
             for(auto it=activeChannels.begin();it!=activeChannels.end();it++)
             {
                 (*it)->handleEvent();
