@@ -27,7 +27,7 @@ namespace hpsf
 
     void EchoServer::onConnection(TcpConnection* connection)
     {
-        std::cout<<"EchoServer- "<<std::endl;
+        //std::cout<<"EchoServer- "<<std::endl;
     }
 
     void EchoServer::onMessage(TcpConnection* connection,Buffer* buffer)
@@ -41,7 +41,7 @@ namespace hpsf
 
     void EchoServer::onWriteComplate(TcpConnection* connection)
     {
-        std::cout<<"write complate to"<<std::endl;
+        //std::cout<<"write complate"<<std::endl;
     }
 
     //run in different thread
