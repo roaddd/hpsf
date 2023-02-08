@@ -7,6 +7,7 @@
 #include <iostream>
 #include "EventLoop.hpp"
 #include "Task.hpp"
+#include "TcpServer.hpp"
 
 namespace hpsf
 {
@@ -17,7 +18,6 @@ namespace hpsf
         pChannel_(new Channel(loop_,sockfd_))
         { 
             pChannel_->setCallBack(this);
-            pChannel_->enableReading();
         }
 
     TcpConnection::~TcpConnection()
@@ -32,6 +32,7 @@ namespace hpsf
 
     void TcpConnection::connectEstablished()
     {
+        pChannel_->enableReading();
         if(pUser_)
             pUser_->onConnection(this);
     }
@@ -52,8 +53,10 @@ namespace hpsf
         }
         else if(readlength==0)
         {
-            std::cout<<"Read length 0 fron connfd: "<<sockfd<<", connfd closed"<<std::endl;
-            close(sockfd);
+            pChannel_->disableReading();
+            pChannel_->disableWriting();
+            TcpConnectionPtr guardThis(shared_from_this());
+            pServer_->removeConnection(guardThis);
         }
         else
         {
@@ -87,6 +90,19 @@ namespace hpsf
     void TcpConnection::run()
     {
         pUser_->onWriteComplate(this);
+    }
+
+    void TcpConnection::run(const std::string& str,void* param)
+    {
+        if(str=="connectEstablished")connectEstablished();
+    }
+
+    void TcpConnection::run(const std::string& str,std::any& any)
+    {
+        if(str=="connectDestroyed")
+        {
+            TcpConnectionPtr conn=std::any_cast<TcpConnectionPtr>(any);
+        }
     }
 
     void TcpConnection::send(const std::string& s)

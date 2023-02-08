@@ -28,7 +28,7 @@ int main()
 {
     //EchoServer
     loop=new hpsf::EventLoop();
-    hpsf::EchoServer server(loop,5);
+    hpsf::EchoServer server(loop,5,3);
     server.start();
     Test1 test1;
     Test2 test2;

@@ -42,7 +42,6 @@ namespace hpsf
     {
         timerfdChannel_.setCallBack(this);
         timerfdChannel_.enableReading();
-        std::cout<<"TimerQueue created"<<std::endl;
     }
 
     TimerQueue::~TimerQueue()
@@ -62,7 +61,6 @@ namespace hpsf
     {
         if(str=="addTimer")
         {
-            std::cout<<"addTimer"<<std::endl;
             doAddTimer(param);
         }
         else
