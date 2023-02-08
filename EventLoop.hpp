@@ -35,6 +35,9 @@ namespace hpsf
             int64_t runAfter(double delay,IRun0* pRun);
             int64_t runEvery(double interval,IRun0* pRun);
             void cancelTimer(int64_t timerfd);
+            void removeChannel(Channel* channel);
+
+            void quit(){quit_=true;}
 
             bool isInLoopThread();
 

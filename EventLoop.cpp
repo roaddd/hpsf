@@ -65,6 +65,11 @@ namespace hpsf
         return evfd;
     }
 
+    void EventLoop::removeChannel(Channel* channel)
+    {
+
+    }
+
     void EventLoop::handleRead()
     {
         uint64_t one=1;
