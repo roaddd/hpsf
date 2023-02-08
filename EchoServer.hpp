@@ -11,7 +11,13 @@ namespace hpsf
     class EchoServer:public IMuduoUser,public IRun1
     {
         public:
-            EchoServer(EventLoop* loop,int numThreads);
+            /**
+             * @brief 
+             * nums1:nums of work threads;
+             * nums2:nums of loop threads;
+             * 
+             */
+            EchoServer(EventLoop* loop,int nums1,int nums2);
             ~EchoServer();
 
             virtual void onConnection(TcpConnection* connection);

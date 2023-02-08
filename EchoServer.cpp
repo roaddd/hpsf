@@ -6,13 +6,14 @@
 
 namespace hpsf
 {
-    EchoServer::EchoServer(EventLoop* loop,int numThreads):
+    EchoServer::EchoServer(EventLoop* loop,int nums1,int nums2):
     loop_(loop),
     tcpServer(loop),
-    numThreads_(numThreads)
+    numThreads_(nums1)
     {
         tcpServer.setCallBack(this);
         threadPool_.start(numThreads_);
+        tcpServer.setThreadNums(nums2);
     }
 
     EchoServer::~EchoServer()
