@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(hpfs CXX)
 
-set(CMAKE_CXX_FLAGS "-g -pthread")
+set(CMAKE_CXX_FLAGS "-g -pthread -std=c++17")
 set(CMAKE_CXX_COMPLIER "g++")
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
@@ -17,6 +17,8 @@ CurrentThread.hpp
 Epoll.cpp 
 EventLoop.cpp 
 EchoServer.cpp
+EventLoopThread.cpp
+EventLoopThreadPool.cpp
 Mutex.hpp
 Task.cpp
 TcpServer.cpp 
