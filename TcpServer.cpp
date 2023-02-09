@@ -25,7 +25,6 @@ namespace hpsf
 
     TcpServer::~TcpServer()
     {
-        ::close(listenfd_);
     }
 
     void TcpServer::start()

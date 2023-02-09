@@ -34,7 +34,6 @@ namespace hpsf
             virtual void run(const std::string& str,std::any& any);
         private:
             EventLoop* loop_;
-            int listenfd_;
             std::unique_ptr<Acceptor> acceptor_;
             std::map<int,TcpConnectionPtr> tcpConnections_;
             IMuduoUser* pUser_;

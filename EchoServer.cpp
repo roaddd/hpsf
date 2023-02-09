@@ -48,7 +48,7 @@ namespace hpsf
     //run in different thread
     void EchoServer::run(const std::string& str,void* param)
     {
-        std::cout<<"fib(30)= "<<fib(30)<<" tid= "<<CurrentThread::tid()<<std::endl;
+        //std::cout<<"fib(30)= "<<fib(30)<<" tid= "<<CurrentThread::tid()<<std::endl;
         TcpConnection* connection=static_cast<TcpConnection*>(param);
         connection->send(str);
     }
