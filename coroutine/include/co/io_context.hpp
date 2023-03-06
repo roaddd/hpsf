@@ -3,29 +3,43 @@
 
 #include <thread>
 #include <queue>
+#include <memory>
+#include <unordered_map>
+#include <coroutine>
 
 #include "../../../Mutex.hpp"
 #include "../../../Condition.hpp"
+#include "net/Epoll.hpp"
+#include "net/Channel.hpp"
 
 namespace co
 {
     template<typename T>
     class Task;
 
+    using namespace hpsf;
+    using namespace std;
+
     class io_context final
     {
         public:
             io_context();
-            void co_spawn(Task<void>&& task);
+            void co_spawn(Task<void>&& task,int fd);
             void join();
-            void run();
+            void start();
+            void update(int fd);
+            void update(std::coroutine_handle<> handle,int fd);
         private:
-            std::thread thread_;
+            void run();
+            thread thread_;
             pid_t tid;
-            std::queue<Task<void>> queue_;
-            hpsf::MutexLock mutex_;
-            std::atomic_bool is_active;
-            hpsf::Condition queue_condition;
+            queue<std::coroutine_handle<>> queue_;
+            MutexLock mutex_;
+            atomic_bool is_active;
+            Condition queue_condition;
+            unique_ptr<Epoll> epoll_;
+            //fd->coroutine_handle
+            unordered_map<int,Channel> channels_;
             //TODO:id
     };
 } // namespace co
