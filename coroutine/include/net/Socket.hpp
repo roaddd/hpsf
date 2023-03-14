@@ -67,12 +67,10 @@ namespace co
         : sockfd_(sockfd),
         context_(context)
         {
-            //debug("Socket(int sockfd)");
         }
 
         Socket(Socket &&other)
         {
-            //debug("Socket(Socket&& other)");
             sockfd_ = other.sockfd_;
             context_=other.context_;
             other.sockfd_ = -1;
@@ -81,7 +79,6 @@ namespace co
 
         Socket& operator=(Socket &&other)
         {
-            //debug("operator=(Socket &&other");
             sockfd_=other.sockfd_;
             context_=other.context_;
             other.sockfd_ = -1;
@@ -91,28 +88,23 @@ namespace co
 
         ~Socket() noexcept
         {
-            //debug("socket close: ", sockfd_);
             close(sockfd_);
         }
 
         [[nodiscard]] auto receive(char *s, int &pos, int allBytes)
         {
-            //debug("will read on sockfd_= ",sockfd_);
             int n = read(sockfd_, static_cast<void *>(s + pos), allBytes - pos);
             if(n==0){
                 close(sockfd_);
                 context_->update(sockfd_);
             }
-            //debug("read over on sockfd_ n= ",n);
             pos += n;
             return socket_receive_awaiter{n};
         }
 
         [[nodiscard]] auto send(char *s, int &pos, int allBytes)
         {
-            //debug("will write on sockfd_= ",sockfd_);
             int n = write(sockfd_, static_cast<const void *>(s + pos), allBytes - pos);
-            //debug("write over on sockfd_ n= ",n);
             pos += n;
             return socket_send_awaiter{n};
         }
