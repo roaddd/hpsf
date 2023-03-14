@@ -1,20 +1,32 @@
 #include "co/Task.hpp"
 #include "co/io_context.hpp"
-#include "utils.hpp"
+#include "Utils.hpp"
+
+#include <sys/epoll.h>
+
+#define can_read EPOLLIN
+#define can_write EPOLLOUT
 
 namespace co
 {
     io_context::io_context()
-    :tid(-1),
-    is_active(true),
-    queue_condition(mutex_)
-    { }
-
-    void io_context::co_spawn(Task<void>&& task)
+        : tid(-1),
+          is_active(true),
+          queue_condition(mutex_),
+          epoll_(new Epoll())
     {
-        hpsf::MutexLockGuard guard(mutex_);
-        queue_.emplace(std::move(task));
-        queue_condition.notify();
+    }
+
+    void io_context::co_spawn(Task<void> &&task,int fd)
+    {
+        std::coroutine_handle<> handle=task.get_handle();
+        task.detach();
+        if(fd==-1){
+            queue_.push(handle);
+        }
+        else{
+            update(handle,fd);
+        }
     }
 
     void io_context::join()
@@ -22,22 +34,40 @@ namespace co
         thread_.join();
     }
 
+    void io_context::start()
+    {
+        thread_ = std::thread([this]()
+                              {
+            //init io_context
+            this->run(); });
+    }
+
     void io_context::run()
     {
-        while(is_active.load(std::memory_order_relaxed) || !queue_.empty())
-        {
-            {
-                hpsf::MutexLockGuard guard(mutex_);
-                while (queue_.empty())
-                {
-                    queue_condition.wait();
-                }
-            }
-            auto task{std::move(queue_.front())};
+        while(queue_.size()){
+            auto t_handle=queue_.front();
             queue_.pop();
-            task.resume();
+            t_handle.resume();
         }
-        debug("loop thread exited\n");
+        while (is_active.load(std::memory_order_relaxed) || !queue_.empty())
+        {
+            vector<Channel*> activates_;
+            epoll_->poll(&activates_);
+            for(int i=0;i<activates_.size();i++){
+                activates_[i]->resume();
+            }
+        }
+    }
+
+    void io_context::update(int fd){
+        
+    }
+
+    void io_context::update(std::coroutine_handle<> handle,int fd)
+    {
+        channels_[fd]=std::move(Channel(handle,fd));//调用Channel()???
+        channels_[fd].setEvents(can_read);
+        //TODO：use shared_ptr
+        epoll_->update(&channels_[fd]);
     }
 } // namespace co
-
