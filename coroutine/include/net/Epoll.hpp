@@ -1,8 +1,8 @@
 #ifndef __EPOLL_HPP__
 #define __EPOLL_HPP__
 
-#include "net/Channel.hpp"
-#include "../../../Define.hpp"
+#include "Channel.hpp"
+#include "../../../include/base/Define.hpp"
 
 #include <sys/epoll.h>
 #include <vector>
