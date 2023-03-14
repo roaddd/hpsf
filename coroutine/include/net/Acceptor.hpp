@@ -43,7 +43,6 @@ namespace co
             if (handle_acceptor == nullptr)
             {
                 handle_acceptor = current;
-                //debug("context_->update() will run");
                 context_->update(handle_acceptor, listenfd_);
             }
             return true;//返回当前协程的调用方/恢复方
@@ -54,9 +53,7 @@ namespace co
             int connfd;
             struct sockaddr_in cliaddr;
             socklen_t clilen = sizeof(cliaddr);
-            //debug("will accept4\n");
             connfd = accept4(listenfd_, static_cast<sockaddr *>(static_cast<void *>(&cliaddr)), &clilen, SOCK_NONBLOCK);
-            //debug("end accept4\n");
             return connfd;
         }
     };
