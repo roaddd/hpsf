@@ -20,13 +20,11 @@ namespace co
         Task<T> get_return_object()
         {
             handle = std::coroutine_handle<TaskPromise>::from_promise(*this);
-            //debug("get_return_object() ", &handle);
             return Task<T>{handle};
         }
         std::suspend_always initial_suspend() { return {}; }
         std::suspend_always final_suspend() noexcept
         {
-            //debug("final_suspend() ", &handle, &parent_coro);
             return {};
         }
         void return_void() {}
@@ -34,19 +32,9 @@ namespace co
 
         void set_parent(std::coroutine_handle<> continuation) noexcept
         {
-            //debug(&handle, " set_parent ", &continuation);
             parent_coro = continuation;
         }
-        // auto await_transform(int val)
-        // {
-        //     struct awaiter : awaiter_base
-        //     {
-        //         using awaiter_base::awaiter_base;
-        //     };
-        //     this->result = val;
-        //     return awaiter{handle};
-        // }
-        // private:
+
         std::coroutine_handle<TaskPromise> handle;
         // 记录caller
         std::coroutine_handle<> parent_coro{std::noop_coroutine()};
@@ -81,7 +69,6 @@ namespace co
             std::coroutine_handle<>
             await_suspend(std::coroutine_handle<> awaiting_coro) noexcept
             {
-                // debug(&handle," await_suspend ",&awaiting_coro);
                 handle.promise().set_parent(awaiting_coro);
                 return handle;
             }
@@ -96,7 +83,6 @@ namespace co
 
         auto operator co_await() const &noexcept
         {
-            //debug("co_await() ", &handle);
             struct awaiter : awaiter_base
             {
                 using awaiter_base::awaiter_base;
@@ -118,7 +104,6 @@ namespace co
 
     private:
         std::coroutine_handle<promise_type> handle;
-        // int fd_;
     };
 
 } // namespace co
