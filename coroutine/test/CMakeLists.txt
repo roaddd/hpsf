@@ -10,10 +10,5 @@ foreach(v ${all_tests})
     # message(${target_name})
     string(REGEX REPLACE ".cpp" "" target_name ${target_name})
     # message(${target_name})
-    add_executable(${target_name} ${v} ../src/co/io_context.cpp)
+    add_executable(${target_name} ${v} $<TARGET_OBJECTS:io_context>)
 endforeach()
-
-# add_executable(io_context_test
-# io_context_test.cpp
-# ../src/co/io_context.cpp
-# )
