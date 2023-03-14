@@ -1,5 +1,5 @@
-#ifndef __CHANNEL_HPP__
-#define __CHANNEL_HPP__
+#ifndef __CHANNEL_CO_HPP__
+#define __CHANNEL_CO_HPP__
 
 #include <coroutine>
 
