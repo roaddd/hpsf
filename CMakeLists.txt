@@ -1,31 +1,12 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.22)
 
 project(hpfs CXX)
 
-set(CMAKE_CXX_FLAGS "-g -pthread -std=c++17")
+set(CMAKE_CXX_FLAGS "-g -pthread -std=c++20 -fcoroutines")
 set(CMAKE_CXX_COMPLIER "g++")
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-add_executable(hpfs test.cpp 
-Acceptor.cpp 
-Buffer.cpp
-BlockingQueue.hpp
-Channel.cpp 
-Condition.hpp
-CurrentThread.hpp
-Epoll.cpp 
-EventLoop.cpp 
-EchoServer.cpp
-EventLoopThread.cpp
-EventLoopThreadPool.cpp
-Mutex.hpp
-Task.cpp
-TcpServer.cpp 
-TcpConnection.cpp 
-TimerQueue.cpp
-Timestamp.cpp
-Thread.cpp
-ThreadPool.cpp
-
-)
+add_subdirectory(src)
+add_subdirectory(coroutine)
+add_subdirectory(test)
